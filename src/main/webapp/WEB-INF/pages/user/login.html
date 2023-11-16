@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Download Website LogIn Page</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/static/css/style.css}" />
+    <!--这里对应的目录都是web下的目录-->
+  </head>
+  <body>
+    <div id="login_header">
+      <a href="../index.html">
+        
+      </a>
+    </div>
+
+    <div class="login_banner">
+      <div id="l_content">
+        <span class="login_word"> Welcome~ </span>
+      </div>
+
+      <div id="content">
+        <div class="login_form">
+          <div class="login_box">
+            <div class="tit">
+              <h1>UOB Student</h1>
+            </div>
+            <div class="msg_cont">
+              <b></b>
+              <span class="errorMsg">Please input Username&Password</span>
+            </div>
+
+            <div class="form">
+
+              <form th:action="@{/user.do}" method="post">
+                <input type="hidden" name="operate" value="login"/>
+                <label>Username :  </label>
+                <input class="itxt" type="text" placeholder="please input your Uname" autocomplete="off" tabindex="1"
+                       name="uname" id="username" value="lina" />
+                <br/>
+                <br/>
+                <label>Password :  </label>
+                <input class="itxt" type="password" placeholder="please input your psw" autocomplete="off" tabindex="1"
+                       name="pwd" id="password" value="ok"/>
+                <br/>
+                <br/>
+                <input type="submit" value="Log In" id="sub_btn" />
+              </form>
+
+              <div class="tit">
+
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom">
+      <span>
+        UOB. Downloading Website &copy; 1663
+      </span>
+    </div>
+  </body>
+</html>

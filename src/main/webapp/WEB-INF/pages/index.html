@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Top Page of the Web</title>
+
+    <link rel="stylesheet" th:href="@{/static/css/minireset.css}" />
+    <link rel="stylesheet" th:href="@{/static/css/common.css}" />
+    <link rel="stylesheet" th:href="@{/static/css/iconfont.css}" />
+    <link rel="stylesheet" th:href="@{/static/css/index.css}" />
+    
+    
+    <script language="JavaScript" th:src="@{/static/script/index.js}"></script>
+    <style>
+        /* 样式化提示框 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 550px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 5px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            top: 100%;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+            font-family: "iconfont";
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="topbar">
+        <div class="w">
+            <div class="topbar-left">
+
+                <i class="iconfont icon-ai-arrow-down"></i>
+            </div>
+            <div class="topbar-right" th:if="${session.curUser==null}">
+                <a href="user/login.html" class="login">LogIn</a>
+                <a href="user/regist.html" class="register">Register</a>
+                <a href="cart/cart.html"  class="cart iconfont icon-gouwuche">
+                    Cart
+                    <div class="cart-num">3</div>
+                </a>
+                <a href="manager/book_manager.html" class="admin">Back-stage Management</a>
+            </div>
+
+            <div class="topbar-right" th:unless="${session.curUser==null}">
+                <!--登录后风格-->
+                <span>Welcome <b th:text="|${session.curUser.getUname()}!|">LaLa  </b></span>
+
+                <span class="tooltip">
+                    <span>You have <b th:text="|${session.credit}|"> </b> credits.</span>
+                    <div class="tooltiptext" >
+                        ==》 We encourage uploading resources, and you will get 6 credit for each upload;</br>
+                        ==》 3 credit will be deducted for each download; </br>
+                        ==》 If other people download the resources upload by you, you will get 9 credits;</br>
+                        ==》 Of course, you don't need to pay again to download resources that you have already paid for; </br>
+                    </div>
+                </span>
+
+                <a href="#" class="register" th:href="@{/user.do(operate='logout')}">LogOut</a>
+
+                <a th:href="@{/cart.do}" class="cart iconfont icon-gouwuche">
+                    Cart
+                    <div class="cart-num" th:text="${session.curUser.cart.getTotalCount()}">3</div><!--th:text="${session.curUser.cart.totalCount-->
+                </a>
+
+                <a th:href="@{/jump.do}" class="admin">  UppLoad New Resources  </a><!--th:href="@{/upload/upload.html}"-->
+
+            </div>
+        </div>
+    </div>
+
+    <div class="header w">
+            <a href="#" class="header-logo"></a>
+            <div class="header-search">
+                <form th:action="@{/resource.do}" method="post">
+                    <input type="hidden" name="oper" value="search"/>
+                    <input type="text" placeholder="resource name" name="keyword" th:value="${session.keyword}"/>
+                    <!--<input type="submit" value="Search"  class="btn"/>-->
+                    <button type="submit" class="iconfont icon-search"></button>
+                </form>
+            </div>
+    </div>
+
+    </div>
+
+    <div class="books-list">
+        <div class="w">
+            <div class="list">
+                <div class="list-header">
+                    <div class="title">Resources List</div>
+                    <div class="price-search">
+                        <span>File Size:</span>
+                        <input type="text">
+                        <span>-MB</span>
+                        <input type="text">
+                        <span>MB</span>
+                        <button>Search</button>
+                    </div>
+                </div>
+                <div class="list-content">
+                    <div href="" class="list-item" th:each="resource:${session.resourceList}" th:object="${resource}">
+                        <img th:src="@{|/static/uploads/*{resourceImg}|}" alt="">
+                        <p th:text="|ResourceName:*{resourceName}|">ResourceName:hah</p>
+                        <p th:text="|PublishAuthor:*{publishAuthor}|">PublishAuthor:余华</p>
+                        <p th:text="|ResourceSize:*{resourceSize}|">PublishAuthor:￥66.6</p>
+                        <p th:text="|resource_id:*{resource_id}|">Resource_id:10</p>
+
+                        <button th:if="${resource.potentUserNum > 500 or #lists.contains(session.resourceIds, resource.resource_id)}" th:data-resource-name="${resource.resourceName}" onclick="downLoadFile(this)">Download Directly.</button>
+                        <button th:unless="${resource.potentUserNum > 500 or #lists.contains(session.resourceIds, resource.resource_id)}" th:onclick="|addCart(*{resource_id})|">Add to Cart.</button>
+
+                    </div>
+                </div>
+
+                <div class="list-footer">
+                    <div  class="bottom_bar">
+                        <button  th:onclick="|page(1)|" th:disabled="${session.pageNo==1}"> First Page </button>
+                        <button  th:onclick="|page(${session.pageNo-1})|" th:disabled="${session.pageNo==1}"> Previous </button>
+                        <button  th:onclick="|page(${session.pageNo+1})|" th:disabled="${session.pageNo==session.pageCount}"> Next </button>
+                        <button  th:onclick="|page(${session.pageCount})|" th:disabled="${session.pageNo==session.pageCount}"> Last Page </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="bottom">
+        <div class="w">
+            <div class="content">
+                <dl>
+                    <dt>Contact Us</dt>
+                    <dd>1800 222 2121<dd>
+                </dl>
+            </div>
+        </div>
+        <div class="down">
+            UOB. © 1763
+        </div>
+    </div>
+
+
+</div>
+    
+
+
+</body>
+</html>

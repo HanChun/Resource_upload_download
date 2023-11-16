@@ -1,0 +1,211 @@
+ 下载项目：
+ http://localhost:8080/webApp/
+
+[1] 资源信息表
+ CREATE TABLE t_downLoadResource (
+       resource_id SERIAL PRIMARY KEY,
+       resourceImg VARCHAR(100) DEFAULT NULL,
+       resourceName VARCHAR(100) DEFAULT NULL,
+
+
+       resourceSize double precision DEFAULT NULL,
+       publishAuthor VARCHAR(100) NOT NULL,
+
+       downLoadNum INT DEFAULT NULL,
+       potentUserNum INT DEFAULT NULL,
+       resourceUrl VARCHAR(100) DEFAULT NULL,
+       status INT DEFAULT NULL,
+       UNIQUE (resource_id)
+       );
+
+
+  insert into t_downLoadResource
+  (resource_id, resourceImg,resourceName,resourceSize,publishAuthor,downLoadNum,potentUserNum,resourceUrl,status)//status 1 代表上架
+  values
+  (1,'QQ.jpg',   'QQ_v6.9.17-12118.dmg',288.00,'Tencent',100,50000,'https://dldir1.qq.com/qqfile/qq/QQNT/7547c696/QQ_v6.9.17-12118.dmg',1),
+  (2,'QQMusicMac.jpg','QQMusicMac_Mgr.dmg',47.2,'Tencent',18,892,'https://dldir1.qq.com/music/clntupate/mac/QQMusicMac_Mgr.dmg',1),
+  (3,'Cage_love.jpg','Cage_love',2.3,'YiHuaTianKai',100,100000,'http://localhost:8080/webApp/Cage_love.mp4',1),
+  (4,'IDEA.jpg','IDEA',1009,'JET Brains',24,98,'https://download-cdn.jetbrains.com/idea/ideaIU-2023.1.4.dmg',1),
+  (5,'Sunrise.jpg','Sunrise_GQY',21.8,'GaoQiaoYou',1000,99000,'http://localhost:8080/webApp/Sunrise_GQY.mp4',1),
+  (6,'GoodNight.jpg','GoodNight_GQY',17.7,'GaoQiaoYou',10,1000,'http://localhost:8080/webApp/GoodNight_GQY.mp4',1),
+
+  (7,'student_Experience.jpg','student_Experience',18.2,'student',3,100,'http://localhost:8080/webApp/student_Experience.mp4',1),
+  (8,'Mycat_MyL.jpg','Mycat_MyL',19,'AnAn',1,13,'http://localhost:8080/webApp/Mycat_MyL.mp4',1),
+  (9,'eclipse.jpg','Eclipse',99.1,'Eclipse Foundation',100,13000,'https://mirror.dogado.de/eclipse/oomph/epp/2023-06/R/eclipse-inst-jre-mac-aarch64.dmg',1),
+  (10,'BaiduNetdisk.jpg','BaiduNetdisk',184,'Baidu',10,8900,'https://issuepcdn.baidupcs.com/issue/netdisk/MACguanjia/4.24.0/BaiduNetdisk_mac_4.24.0_arm64.dmg',1),
+  (11,'DataGrip.jpg','DataGrip',518,'jetbrains',5,99,'https://download-cdn.jetbrains.com/datagrip/datagrip-2023.2.dmg',1);
+
+
+[2] 用户基本信息表
+CREATE TABLE t_user (
+  user_id SERIAL PRIMARY KEY,
+  uname varchar(20) NOT NULL,
+  pwd varchar(32) NOT NULL,
+  email varchar(100),
+  role int
+);
+
+INSERT INTO t_user (uname, pwd, email, role)
+VALUES
+('Lina', 'ok', 'lina@sina.com.cn', 0),
+('Kate', 'ok', 'hello_kate@126.com', 1),
+('鸠摩智', 'ok', 'jiu@126.com', 0),
+('GaoqiaoYou', 'ok', 'GaoqiaoYou@sohu.com.cn', 0),
+('GaoqiaoYou_9', '123', 'GaoqiaoYou9@sohu.com.cn', 0);
+
+[3] 购物车详情表
+CREATE TABLE t_cart_item (
+  cartItem_id SERIAL PRIMARY KEY,
+  resource_id int,
+  downLoadNum int,
+  user_id int,
+  FOREIGN KEY (resource_id) REFERENCES t_downLoadResource (resource_id),
+  FOREIGN KEY (user_id) REFERENCES t_user (user_id)
+);
+
+Copy code
+INSERT INTO t_cart_item
+(cartItem_id, resource_id, downLoadNum, user_id)
+VALUES
+(9, 1, 1, 2),
+(10, 5, 1, 1),
+(11, 1, 1, 1),
+(12, 2, 1, 1),
+(13, 3, 1, 1),
+(14, 4, 1, 1),
+(15, 6, 1, 1),
+(16, 7, 1, 1),
+(17, 8, 1, 1),
+(18, 9, 1, 1),
+(19, 10, 1, 1),
+(20, 11, 4, 1);
+
+[4] 下载订单表
+CREATE TABLE t_order (
+  order_id SERIAL PRIMARY KEY,
+  orderNo varchar(128) NOT NULL,
+  orderDate timestamp,
+  user_id int,
+  orderFileSize double precision,
+  orderStatus int,
+  UNIQUE (orderNo),
+  FOREIGN KEY (user_id) REFERENCES t_user (user_id)
+);
+
+INSERT INTO t_order (order_id, orderNo, orderDate, user_id, orderFileSize, orderStatus)
+VALUES
+(4, '5eaab6146dc54e0482fdb8b6120c229b_20211025112519', '2021-10-25 11:25:20', 1, 506.90, 0),
+(5, 'f5a22aac925d42eabc6b49c45a3eb74f_20211025113004', '2021-10-25 11:30:04', 1, 48.95, 0),
+(6, '8a245df4359e4224b531cf121c4acab3_20211025113019', '2021-10-25 11:30:20', 1, 0.00, 0),
+(7, 'b521cd49ab2943f0bbc0630c95978f1c_20211025113039', '2021-10-25 11:30:40', 1, 48.95, 0),
+(8, 'd4f366a82cd4491c9899b181753804b4_20211025113151', '2021-10-25 11:31:52', 1, 48.95, 0),
+(9, '8f5869a839f4483e947bd2c3163f3c23_20211025113159', '2021-10-25 11:31:59', 1, 48.95, 0),
+(10, 'c5fcd95dbe7f49669f96b4ad6444ae6b_20211025120531', '2021-10-25 12:05:32', 1, 147.95, 0),
+(11, '6240ec3e5ac04e3583e1beb75a9e94ec_20211025120542', '2021-10-25 12:05:42', 1, 147.95, 0);
+
+[5] 下载订单详情表
+
+CREATE TABLE t_order_item (
+  orderItem_id SERIAL PRIMARY KEY,
+  resource_id int,
+  downLoadNum int,
+  order_id int,
+  FOREIGN KEY (resource_id) REFERENCES t_downLoadResource (resource_id),
+  FOREIGN KEY (order_id) REFERENCES t_order (order_id)
+);
+
+INSERT INTO
+t_order_item (orderItem_id, resource_id, downLoadNum, order_id)
+VALUES
+(6, 1, 1, 4),
+(7, 2, 2, 4),
+(8, 10, 1, 4),
+(9, 3, 5, 4),
+(10, 4, 1, 4),
+(11, 2, 1, 5),
+(12, 2, 1, 7),
+(13, 2, 1, 8),
+(14, 2, 1, 9),
+(15, 1, 1, 10),
+(16, 2, 1, 10),
+(17, 1, 1, 11),
+(18, 2, 1, 11);
+
+[6]
+CREATE TABLE t_degree (
+       degree_id SERIAL PRIMARY KEY,
+       degreeName VARCHAR(100) DEFAULT NULL
+       );
+
+insert into t_degree
+(degree_id,degreeName)
+values
+(1,'CS'),
+(2,'AI'),
+(3,'DA'),
+(4,'Robotics')
+
+
+
+[7]
+CREATE TABLE t_user_degree (
+   user_degree_id SERIAL PRIMARY KEY,
+   user_id INT REFERENCES t_user(user_id),
+   degree_id INT REFERENCES t_degree(degree_id),
+   CONSTRAINT unique_user_degree UNIQUE (user_id)
+);
+
+insert into t_user_degree
+(user_degree_id,user_id,degree_id)
+values
+(1,1,1),
+(2,2,1),
+(3,3,1),
+(4,4,1),
+(5,5,1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

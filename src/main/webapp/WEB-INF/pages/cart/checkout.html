@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DownloadingPage</title>
+<link type="text/css" rel="stylesheet" th:href="@{/static/css/style.css}">
+	<script>
+		window.onload = function() {
+			window.location.href ='download.do?operate=downLoadFileList' // 你所吧 你是不是傻
+		}
+	</script>
+<style type="text/css">
+	h1 {
+		text-align: center;
+		margin-top: 200px;
+		font-size: 26px;
+	}
+	.oid{
+		color: #232121;
+		font-weight: bolder;
+	}
+</style>
+</head>
+<body>
+		<div class="header">
+			<div class="w">
+				<div class="header-left">
+					<a th:href="@{/user.do}">
+						<img th:src="@{/static/img/logo.gif}" alt=""/></a>
+				</div>
+				<div class="header-right">
+					<h3>Welcome <b th:text="|${session.curUser.getUname()}!|"> LaLa</b> </h3>
+					<div class="order"><a th:href="@{/order/order.html}">Your order</a></div>
+					<div class="destory"><a th:href="@{/index.html}">Log Out</a></div>
+					<div class="gohome">
+						<a th:href="@{/resource.do}">Return Back</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+	<div id="main">
+		<h1>Downloading ... ... <span class="oid"> </span></h1>
+	</div>
+
+	<div id="bottom">
+		<span>
+			UOB. &copy;1763
+		</span>
+	</div>
+</body>
+</html>

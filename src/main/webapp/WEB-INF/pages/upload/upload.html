@@ -1,0 +1,289 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>webuploader</title>
+</head>
+<!--引入CSS!widows: 100%;-->-->
+<link rel="stylesheet" type="text/css" href="webuploader.css">
+<script src="jquery-1.11.1.js"></script>
+<script src="webuploader.js"></script>
+<style>
+    #upload-container, #upload-list{width: 500px; margin: 0 auto; }
+    #upload-container{cursor: pointer; border-radius: 15px; background: #8a8a8d; height: 200px;}
+    #upload-list{height: 200px; border: 2px solid #030303; border-radius: 15px; margin-top: 1px; padding: 10px 20px;}
+    #upload-container>span{widows: 100%; text-align: center; color: #030303; display: block; padding-top: 8%; font-size: 20px;}
+    .upload-item{margin-top: 5px; padding-bottom: 5px; border-bottom: 1px dashed gray;}
+    .percentage{height: 5px; background: green;}
+    .btn-delete, .btn-retry{cursor: pointer; color: gray;}
+    .btn-delete:hover{color: orange;}
+    .btn-retry:hover{color: green;}
+
+    *{
+        color: threeddarkshadow;
+    }
+    body{
+        margin:0;
+        padding:0;
+        background-color: #100f0f;
+    }
+    div{
+        position:relative;
+        float:left;
+    }
+
+    .w20{
+        width:20%;
+    }
+
+    #div_container{
+        width:80%;
+        height:100%;
+        border:0px solid blue;
+        margin-left:10%;
+        float:left;
+        background-color: #1c1b1b;
+        border-radius:8px;
+    }
+
+    #div_resource_list{
+        width:100%;
+        border:0px solid red;
+    }
+    #tbl_resource{
+        width:60%;
+        line-height:28px;
+        margin-top:16px;
+        margin-left:20%;
+    }
+
+    #tbl_resource, #tbl_resource tr, #tbl_resource th, #tbl_resource td{
+        border:1px solid #ded8d8;
+        border-collapse:collapse;
+        text-align:center;
+        font-size:15px;
+        font-family:"黑体";
+        font-weight:lighter;
+    }
+
+    .w20{
+        width:20%;
+    }
+
+    .btn{
+        border:1px solid lightgray;
+        width:80px;
+        height:24px;
+    }
+
+    .center{
+        text-align:center;
+        color: white;
+    }
+
+    .f30{
+        font-size: 20px;
+    }
+
+    td {
+        color: #ebebef;
+    }
+
+    th {
+        color: #f2f5f2;
+    }
+
+    .w20_href {
+        color: white; /* Set the text color to white */
+    }
+
+     tr.thhhh {
+         display: none;
+     }
+
+    .input-large {
+        font-size: 20px;
+    }
+
+</style>
+<!--引入JS-->
+<body>
+    <div id="div_container">
+        <div id="div_resource_list">
+            <p class="center f30">UpLoad your Resource</p>
+
+                <form action="resource.do" method="post" >
+                    <input type="hidden" name="operate" value="add"/>
+                    <table id="tbl_resource" >
+                        <tr>
+                            <th class="w20">resourceImg：</th>
+                            <!-- <td><input type="text" name="fname" th:value="${fruit.fname}"/></td> -->
+                            <td><input type="text" name="resourceImg" value="pay.jpg" style="width: 400px;" class="input-large"/></td>
+                        </tr>
+
+                        <tr>
+                            <th class="w20">resourceName ：</th>
+                            <td><input type="text" name="resourceName" style="width: 400px;" class="input-large"/></td>
+                        </tr>
+
+                        <tr>
+                            <th class="w20">resourceSize ：</th>
+                            <td><input type="text" name="resourceSize" style="width: 400px;" class="input-large"/></td>
+                        </tr>
+
+                        <tr>
+                            <th class="w20">publishAuthor ：</th>
+                            <td><input type="text" name="publishAuthor" th:value="|${session.curUser.getUname()}|" style="width: 400px;" class="input-large"/></td>
+                        </tr>
+
+                        <tr class="thhhh">
+                            <th class="w20">downLoadNum ：</th>
+                            <td><input type="text" name="downLoadNum"  style="width: 400px;" class="input-large"/></td>
+                        </tr>
+
+                        <tr>
+                            <th class="w20">potentUserNum ：</th>
+                            <td><input type="text" name="potentUserNum" style="width: 400px;" class="input-large" value="500"/></td>
+                        </tr>
+
+                        <tr>
+                            <th class="w20">resourceUrl：</th>
+                            <td><input type="text" name="resourceUrl" value="http://localhost:8080/pro24/download/" style="width: 400px;" class="input-large"/></td>
+                        </tr>
+
+                        <tr >
+                            <th class="w20_href">
+                                <a href="resource.do" >Back</a>
+                            </th>
+                            <td><input type="submit" value=" ADD " style="width: 400px;" class="input-large"/> </td>
+                        </tr>
+
+                        <tr>
+                            <th colspan="2" align="center">
+                                <div id="upload-container" align="center" style="width: 100%;">
+                                    <span align="center" class="centered-button" >Click or drag your file here ~~~ </span>
+                                </div>
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th colspan="2" align="center" style="width: 100%;">
+                                <div id="upload-list" class="centered-button"></div>
+                            </th>
+                        </tr>
+
+                    </table>
+                </form>
+        </div>
+    </div>
+    <button id="picker" style="display: none;"> Click to upload file </button>
+
+</body>
+
+<script>
+        var md5Value;
+
+        $('#upload-container').click(function(event) {
+            $("#picker").find('input').click();
+        });
+        var uploader = WebUploader.create({
+            auto: true,                         // 选完文件后，是否自动上传。
+            swf: 'Uploader.swf',                // swf文件路径
+            server: 'http://localhost:8080/pro24/upload.do?operate=upload',// 文件接收服务端。topic.do?operate=topicDetail&id="+topicId;
+            dnd: '#upload-container',
+            pick: '#picker',                        // 内部根据当前运行是创建，可能是input元素，也可能是flash. 这里是div的id
+            multiple: false,                        // 选择多个
+            chunked: true,                              // 开启分片上传。
+            threads: 50,                                        // 上传并发数。允许同时最大上传进程数。
+            method: 'POST',                              // 文件上传方式，POST或者GET。
+            fileSizeLimit: 2*1024*1024*1024,                //验证文件总大小是否超出限制, 超出则不允许加入队列。
+            fileSingleSizeLimit: 2*1024*1024*1024,               //验证单个文件大小是否超出限制, 超出则不允许加入队列。
+            fileVal:'upload'                                         // [默认值：'file'] 设置文件上传域的name。
+        });
+
+        uploader.on("beforeFileQueued", function(file) {
+            console.log(file); // 获取文件的后缀; 文件入队之前
+        });
+
+        uploader.on('fileQueued', function(file) {
+            // 选中文件时要做的事情，比如在页面中显示选中的文件并添加到文件列表，获取文件的大小，文件类型等
+            console.log(file.ext); // 获取文件的后缀
+            console.log(file.size);// 获取文件的大小
+            console.log(file.name);
+
+            var html = '<div class="upload-item">' +
+                            '<span>FileName：'+ file.name +'</span>' +
+                            //'<span data-file_id="'+file.id+'" class="btn-delete"> Delete </span>' +
+                            //'<span data-file_id="'+file.id+'" class="btn-retry"> Retry </span>' +
+                            '<div class="percentage '+file.id+'" style="width: 0%;"></div>' +
+                        '</div>';
+            $('#upload-list').append(html);
+
+            uploader.md5File(file)
+                .progress(function(percentage) {// 及时显示进度
+                    console.log('Percentage:', percentage);
+                })
+                .then(function(val) { // 完成
+                    md5Value = val;
+                    console.log('md5Value : ', md5Value);
+                    console.log('md5 result:', val);
+                });
+
+            var resourceNameInput = document.querySelector('input[name="resourceName"]');
+            if (resourceNameInput) {
+                resourceNameInput.value = file.name;
+            }
+            var resourceSizeInput = document.querySelector('input[name="resourceSize"]');
+            if (resourceSizeInput) {
+                resourceSizeInput.value = (file.size / 1000000).toFixed(2);
+            }
+            var resourceNameInput = document.querySelector('input[name="downLoadNum"]');
+            if (resourceNameInput) {
+                resourceNameInput.value = 100;
+            }
+            var resourceSizeInput = document.querySelector('input[name="resourceUrl"]');
+            if (resourceSizeInput) {
+                resourceSizeInput.value = 'http://localhost:8080/pro24/downloadTest/' +file.name ;
+            }
+        });
+
+        uploader.on('uploadProgress', function(file, percentage) {
+            console.log(percentage * 100 + '%');
+            var width = $('.upload-item').width();
+            $('.'+file.id).width(width*percentage);
+        });
+
+        uploader.on('uploadSuccess', function(file, response) {
+            console.log(file.id+"Upload Succeed/传输成功");
+        });
+
+        uploader.on('uploadError', function(file) {
+            console.log(file);
+            console.log(file.id+'upload error')
+        });
+
+        $('#upload-list').on('click', '.upload-item .btn-delete', function() {
+            // 从文件队列中删除某个文件id
+            file_id = $(this).data('file_id');
+            // uploader.removeFile(file_id); // 标记文件状态为已取消
+            uploader.removeFile(file_id, true); // 从queue中删除
+            console.log(uploader.getFiles());
+        });
+
+        $('#upload-list').on('click', '.btn-retry', function() {
+            uploader.retry($(this).data('file_id'));
+        });
+
+        uploader.on('uploadComplete', function(file) {
+            console.log(uploader.getFiles());
+        });
+
+        document.getElementById("goToHomeButton").addEventListener("click", function() {
+            // Redirect back to the "index.html" page
+
+            window.location.href = "resource.do?operate=index";
+        });
+</script>
+
+</html>

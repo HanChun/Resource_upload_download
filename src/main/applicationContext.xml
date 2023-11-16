@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans [
+        <!ELEMENT beans (bean*)>
+        <!ELEMENT bean (property*)>
+        <!ELEMENT property (#PCDATA)>
+
+        <!ATTLIST bean id ID #REQUIRED>
+        <!ATTLIST bean class CDATA #IMPLIED>
+        <!ATTLIST property name CDATA #IMPLIED>
+        <!ATTLIST property ref IDREF #IMPLIED>
+        ]>
+<beans>
+    <!--DAOImpl (!(+[])+{})[–[+""][+[]]*[~+[]] + ~~!+[]]+({}+[])[[!+[]]*+[]] -->
+    <bean id="userDAO" class="azone.dao.impl.UserDAOImpl"/>
+    <bean id="resourceDAO" class="azone.dao.impl.ResourceDaoImpl"/>
+    <bean id="cartItemDAO" class="azone.dao.impl.CartItemDAOImpl"/>
+    <bean id="orderDAO" class="azone.dao.impl.OrderDaoImpl"/>
+    <bean id="orderItemDAO" class="azone.dao.impl.OrderItemDAOImpl"/>
+    <bean id="creditDAO" class="azone.dao.impl.CreditDAOImpl"/>
+
+
+
+    <!--serviceImpl (!(+[])+{})[–[+""][+[]]*[~+[]] + ~~!+[]]+({}+[])[[!+[]]*+[]] -->
+    <bean id="creditService" class="azone.service.impl.CreditServiceImpl">
+        <property name="creditDAO" ref="creditDAO"/>
+    </bean>
+    <bean id="userService" class="azone.service.impl.UserServiceImpl">
+        <property name="userDAO" ref="userDAO"/>
+    </bean>
+    <bean id="resourceService" class="azone.service.impl.ResourceServiceImpl">
+        <property name="resourceDAO" ref="resourceDAO"/>
+    </bean>
+    <bean id="cartItemService" class="azone.service.impl.CartItemServiceImpl">
+        <property name="cartItemDAO" ref="cartItemDAO"/>
+        <property name="resourceService" ref="resourceService"/>
+    </bean>
+    <bean id="orderService" class="azone.service.impl.OrderServiceImpl">
+        <property name="orderDAO" ref="orderDAO"/>
+        <property name="orderItemDAO" ref="orderItemDAO"/>
+        <property name="cartItemDAO" ref="cartItemDAO"/>
+    </bean>
+
+
+    <!-- controllerImpl (!(+[])+{})[–[+""][+[]]*[~+[]] + ~~!+[]]+({}+[])[[!+[]]*+[]] -->
+    <bean id="upload" class="azone.controller.UploadController">
+    </bean>
+    <bean id="jump" class="azone.controller.JumpController"></bean>
+
+    <bean id="download" class="azone.controller.DownLoadController">
+        <property name="orderService" ref="orderService"/>
+    </bean>
+
+    <bean id="user" class="azone.controller.UserController">
+        <property name="userService" ref="userService"/>
+        <property name="cartItemService" ref="cartItemService"/>
+        <property name="creditService" ref="creditService"/>
+    </bean>
+    
+    <bean id="resource" class="azone.controller.ResourceController">
+        <property name="resourceService" ref="resourceService" />
+        <property name="creditService" ref="creditService"/>
+    </bean>
+
+    <bean id="cart" class="azone.controller.CartController">
+        <property name="cartItemService" ref="cartItemService"/>
+    </bean>
+
+    <bean id="order" class="azone.controller.OrderController">
+        <property name="creditService" ref="creditService"/>
+        <property name="orderService" ref="orderService"/>
+        <property name="cartItemService" ref="cartItemService"/>
+        <property name="resourceService" ref="resourceService"/>
+    </bean>
+
+    <bean id="page" class="myssm.myspringmvc.PageController"/>
+</beans>
+
+
+
+
